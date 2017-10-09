@@ -60,7 +60,8 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MY_ELIT_MAP = new XYTileSource("Elitmap", 0, 18, 256, ".png", new String[]{"http://194.48.212.18:8070/osm/"}, "© ElitMap");
+        //MY_ELIT_MAP = new XYTileSource("Elitmap", 0, 18, 256, ".png", new String[]{"http://194.48.212.18:8070/osm/"}, "© ElitMap");
+        MY_ELIT_MAP = new XYTileSource("Elitmap", 0, 18, 256, ".png", new String[]{"http://tiles.mq.ua/"}, "© ElitMap");
 
         //Permision code that will be checked in the method onRequestPermissionsResult
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
