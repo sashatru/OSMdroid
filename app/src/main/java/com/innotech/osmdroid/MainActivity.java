@@ -5,13 +5,20 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.DragEvent;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,10 +30,12 @@ import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
+import org.osmdroid.tileprovider.MapTileProviderBasic;
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase;
 import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.util.LocationUtils;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
@@ -34,35 +43,42 @@ import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.Polyline;
+import org.osmdroid.views.overlay.TilesOverlay;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MapEventsReceiver {
+    private final static String TAG = "OSMdroid";
 
     private int STORAGE_PERMISSION_CODE = 0;
     private int LOCATION_PERMISSION_CODE = 1;
     Context ctx;
     MapView mMap;
-    OnlineTileSourceBase MY_ELIT_MAP;
-    IMapController mapController;
+    OnlineTileSourceBase MY_ELIT_MAP, MAPNIK;
+    public static IMapController mapController;
     Marker myMarker, taxiMarker;
     Polyline pathOverlay;
     TextView textViewCurrentLocation;
+    protected ImageButton btCenterMap;
 
     private ArrayList<OverlayItem> mItemList;
     OverlayItem startOverlayItem, finishOvelayItem;
 
     private Drawable mMarkerIcon = null, mTaxiIcon = null, pointA = null, pointB = null;
 
+    private float ys, y;
+    private boolean zoomMode;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //MY_ELIT_MAP = new XYTileSource("Elitmap", 0, 18, 256, ".png", new String[]{"http://194.48.212.18:8070/osm/"}, "© ElitMap");
-        MY_ELIT_MAP = new XYTileSource("Elitmap", 0, 18, 256, ".png", new String[]{"http://tiles.mq.ua/"}, "© ElitMap");
-
+        MY_ELIT_MAP = new XYTileSource("Elitmap", 0, 18, 256, ".png", new String[]{"http://185.151.245.60/"}, "© ElitMap");
+        MAPNIK = new XYTileSource("https://tiles.wmflabs.org/bw-mapnik/", 0,
+                18, 256, ".png", new String[]{"https://tiles.wmflabs.org/bw-mapnik/"}, "https://tiles.wmflabs.org/bw-mapnik/");
         //Permision code that will be checked in the method onRequestPermissionsResult
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // request permissions and handle the result in onRequestPermissionsResult()
@@ -99,11 +115,56 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
         contentLayout.addView(mMap, mapParams);
         textViewCurrentLocation = (TextView) findViewById(R.id.centerCoords);
 
+
+        final GestureDetector gd = new GestureDetector(ctx, new GestureDetector.SimpleOnGestureListener(){
+            //here is the method for double tap
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                //your action here for double tap e.g.
+                //Log.d(TAG, "onDoubleTap MotionEvent = "+e);
+                return false;
+            }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+                zoomMode = true;
+                super.onLongPress(e);
+            }
+
+            @Override
+            public boolean onDoubleTapEvent(MotionEvent e) {
+                //Log.d(TAG, "onDoubleTap onDoubleTapEvent = "+e);
+                return true;
+            }
+
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+        });
+
+//here yourView is the View on which you want to set the double tap action
+/*
+        mMap.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouchEvent = "+event);
+                return gd.onTouchEvent(event);
+            }
+        });
+*/
+        /*final MapTileProviderBasic tileProvider = new MapTileProviderBasic(ctx);
+        tileProvider.setTileSource(MY_ELIT_MAP);
+        final TilesOverlay mTilesOverlay = new TilesOverlay(tileProvider, ctx);
+        mMap.setOverlayManager(new MyOverlayManager(mTilesOverlay));*/
+        mMap.setOverlayManager(MyOverlayManager.create(mMap, ctx));
+
         // add default zoom buttons
         mMap.setBuiltInZoomControls(true);
         // add ability to zoom with 2 fingers (multi-touch)
         mMap.setMultiTouchControls(true);
         mMap.setTilesScaledToDpi(true);
+
 
         mMap.setMapListener(new MapListener() {
             @Override
@@ -155,28 +216,39 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
 
         mMap.invalidate();
 
+        btCenterMap = (ImageButton) findViewById(R.id.ic_center_map);
+
+        btCenterMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mapController.setZoom(13);
+                setLastKnownLocation();
+            }
+        });
 
         initLocationOverlay();
-    }
 
-    @Override
-    public boolean singleTapConfirmedHelper(GeoPoint p) {
-        mapController.animateTo(p);
-        Toast.makeText(ctx, "Lat = " + p.getLatitude() + " Lon = " + p.getLongitude(), Toast.LENGTH_LONG).show();
-        return true;
-    }
 
-    @Override
-    public boolean longPressHelper(GeoPoint p) {
-        return false;
     }
 
     private void initLocationOverlay() {
-        MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), mMap);
+        final MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), mMap);
         mLocationOverlay.enableMyLocation();
         mMap.getOverlays().add(mLocationOverlay);
+        setLastKnownLocation();
+        mLocationOverlay.runOnFirstFix(new Runnable() {
+            public void run() {
+                mMap.getController().animateTo(mLocationOverlay.getMyLocation());
+            }
+        });
     }
-
+    private void setLastKnownLocation() {
+        final LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        final Location location = LocationUtils.getLastKnownLocation(lm);
+        if (location != null) {
+            mMap.getController().animateTo(new GeoPoint(location.getLatitude(), location.getLongitude()));
+        }
+    }
     //This method will be called when the user will tap on allow or deny
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -297,5 +369,46 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
     public void setMapToPoint(View view) {
         GeoPoint startPoint = new GeoPoint(50.417380, 30.494161);//ТЕСТ ОФИС 1000
         mapController.setCenter(startPoint);
+    }
+
+
+    @Override
+    public boolean singleTapConfirmedHelper(GeoPoint p) {
+        mapController.animateTo(p);
+        Toast.makeText(ctx, "Lat = " + p.getLatitude() + " Lon = " + p.getLongitude(), Toast.LENGTH_LONG).show();
+        return true;
+    }
+
+    @Override
+    public boolean longPressHelper(GeoPoint p) {
+        Log.d(TAG, "longPressHelper");
+        zoomMode = true;
+        return false;
+    }
+
+
+    //zoom with one finger after long press
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            ys = ev.getY();
+            zoomMode = false;
+            Log.d(TAG, "dispatchTouchEvent MotionEvent.ACTION_DOWN");
+        }
+        if (zoomMode && ev.getAction() == MotionEvent.ACTION_MOVE) {
+            y = ev.getY();
+            if (y>ys*1.05){
+                mapController.zoomIn();
+                ys = y;
+            } else if (y<ys/1.05){
+                mapController.zoomOut();
+                ys = y;
+            }
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    public static void zoomInMap(){
+        mapController.zoomIn();
     }
 }

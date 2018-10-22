@@ -7,6 +7,7 @@
         android:id="@+id/contentLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" android:orientation="vertical">
+
     </LinearLayout>
     <TextView
         android:id="@+id/centerCoords"
@@ -15,6 +16,18 @@
         android:layout_centerHorizontal="true" android:layout_marginTop="28dp"
         android:text="Текст" android:textAlignment="center" android:textColor="@android:color/black"
         android:textSize="24sp"/>
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ic_center_map"
+        android:src="@drawable/ic_menu_mylocation"
+        android:layout_marginRight="14dp"
+        android:background="#00ffffff"
+        android:contentDescription="@string/bt_center_map_description"
+        android:cropToPadding="true"
+        android:layout_marginEnd="14dp" android:layout_below="@+id/centerCoords"
+        android:layout_alignParentRight="true" android:layout_alignParentEnd="true"/>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton"
         android:layout_width="wrap_content"
