@@ -76,9 +76,6 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MY_ELIT_MAP = new XYTileSource("Elitmap", 0, 18, 256, ".png", new String[]{"http://185.151.245.60/"}, "© ElitMap");
-        MAPNIK = new XYTileSource("https://tiles.wmflabs.org/bw-mapnik/", 0,
-                18, 256, ".png", new String[]{"https://tiles.wmflabs.org/bw-mapnik/"}, "https://tiles.wmflabs.org/bw-mapnik/");
         //Permision code that will be checked in the method onRequestPermissionsResult
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // request permissions and handle the result in onRequestPermissionsResult()
@@ -91,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
                     checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_CODE);
             }
+        }else {
+            initMap();
         }
     }
 
@@ -101,6 +100,11 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
         ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+
+        MY_ELIT_MAP = new XYTileSource("Elitmap", 0, 18, 256, ".png", new String[]{"http://185.151.245.60/"}, "© ElitMap");
+        //MY_ELIT_MAP = new XYTileSource("Elitmap", 0, 18, 256, ".png", new String[]{"http://185.151.247.111/tile/"}, "© ElitMap");
+        MAPNIK = new XYTileSource("https://tiles.wmflabs.org/bw-mapnik/", 0,
+                18, 256, ".png", new String[]{"https://tiles.wmflabs.org/bw-mapnik/"}, "https://tiles.wmflabs.org/bw-mapnik/");
 
         // !!! it's highly important for Android>M make mapView programmatically
         LinearLayout contentLayout = (LinearLayout) findViewById(R.id.contentLayout);
@@ -259,7 +263,8 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
             } else {
                 //Displaying toast if permission is not granted
                 Toast.makeText(this, getResources().getString(R.string.storage_permission_denied), Toast.LENGTH_LONG).show();
-                finish();
+                //finish();
+                initMap();
             }
         }
         if (requestCode == LOCATION_PERMISSION_CODE) {
