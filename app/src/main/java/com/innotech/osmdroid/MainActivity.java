@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
     private int LOCATION_PERMISSION_CODE = 1;
     Context ctx;
     MapView mMap;
-    OnlineTileSourceBase MY_ELIT_MAP, MAPNIK;
+    OnlineTileSourceBase MY_ELIT_MAP, MAPNIK, OSM_MAP;
     public static IMapController mapController;
     Marker myMarker, taxiMarker;
     Polyline pathOverlay;
@@ -102,15 +102,15 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
         MY_ELIT_MAP = new XYTileSource("Elitmap", 0, 18, 256, ".png", new String[]{"http://185.151.245.60/"}, "© ElitMap");
-        //MY_ELIT_MAP = new XYTileSource("Elitmap", 0, 18, 256, ".png", new String[]{"http://185.151.247.111/tile/"}, "© ElitMap");
-        MAPNIK = new XYTileSource("https://tiles.wmflabs.org/bw-mapnik/", 0,
+        OSM_MAP = new XYTileSource("OSM", 0, 18, 256, ".png", new String[]{"https://a.tile.openstreetmap.org/"}, "© ElitMap");
+        MAPNIK = new XYTileSource("Mapnik", 0,
                 18, 256, ".png", new String[]{"https://tiles.wmflabs.org/bw-mapnik/"}, "https://tiles.wmflabs.org/bw-mapnik/");
 
         // !!! it's highly important for Android>M make mapView programmatically
         LinearLayout contentLayout = (LinearLayout) findViewById(R.id.contentLayout);
         mMap = new MapView(ctx);
         //set custom mMap tile source
-        mMap.setTileSource(MY_ELIT_MAP);
+        mMap.setTileSource(MAPNIK);
         //custom
         org.osmdroid.views.MapView.LayoutParams mapParams = new org.osmdroid.views.MapView.LayoutParams(
                 org.osmdroid.views.MapView.LayoutParams.MATCH_PARENT,
@@ -242,7 +242,13 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
         setLastKnownLocation();
         mLocationOverlay.runOnFirstFix(new Runnable() {
             public void run() {
-                mMap.getController().animateTo(mLocationOverlay.getMyLocation());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mMap.getController().animateTo(mLocationOverlay.getMyLocation());
+                    }
+                });
+
             }
         });
     }
