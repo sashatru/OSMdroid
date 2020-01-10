@@ -36,6 +36,7 @@ import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.util.LocationUtils;
+import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
@@ -65,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
     Polyline pathOverlay;
     TextView textViewCurrentLocation;
     protected ImageButton btCenterMap;
+
+    private MyLocationNewOverlay mLocationOverlay;
 
     private ArrayList<OverlayItem> mItemList;
     OverlayItem startOverlayItem, finishOvelayItem;
@@ -140,13 +143,13 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
         //mMap.setOverlayManager(MyOverlayManager.create(mMap, ctx));
 
         // add default zoom buttons
-        mMap.setBuiltInZoomControls(true);
+        mMap.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT);
         // add ability to zoom with 2 fingers (multi-touch)
         mMap.setMultiTouchControls(true);
         mMap.setTilesScaledToDpi(true);
 
 
-        mMap.setMapListener(new MapListener() {
+        mMap.addMapListener(new MapListener() {
             @Override
             public boolean onScroll(ScrollEvent event) {
                 IGeoPoint mapCenter = mMap.getMapCenter();
@@ -212,9 +215,12 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
     }
 
     private void initLocationOverlay() {
-        final MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), mMap);
-        mLocationOverlay.enableMyLocation();
+        mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), mMap);
+        final Bitmap currentIcon = BitmapFactory.decodeResource(getResources(), R.drawable.direction_arrow);
+        mLocationOverlay.setDirectionArrow( currentIcon, currentIcon );
+        mLocationOverlay.setPersonIcon( currentIcon );
         mMap.getOverlays().add(mLocationOverlay);
+
         setLastKnownLocation();
         mLocationOverlay.runOnFirstFix(new Runnable() {
             public void run() {
@@ -268,6 +274,13 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //Configuration.getInstance().save(this, prefs);
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
+        mLocationOverlay.enableMyLocation();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mLocationOverlay.disableMyLocation();
     }
 
     public void showRoute(View view) {
