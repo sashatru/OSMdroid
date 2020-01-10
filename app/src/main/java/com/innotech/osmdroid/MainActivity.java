@@ -120,33 +120,6 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
         textViewCurrentLocation = (TextView) findViewById(R.id.centerCoords);
 
 
-        final GestureDetector gd = new GestureDetector(ctx, new GestureDetector.SimpleOnGestureListener(){
-            //here is the method for double tap
-            @Override
-            public boolean onDoubleTap(MotionEvent e) {
-                //your action here for double tap e.g.
-                //Log.d(TAG, "onDoubleTap MotionEvent = "+e);
-                return false;
-            }
-
-            @Override
-            public void onLongPress(MotionEvent e) {
-                zoomMode = true;
-                super.onLongPress(e);
-            }
-
-            @Override
-            public boolean onDoubleTapEvent(MotionEvent e) {
-                //Log.d(TAG, "onDoubleTap onDoubleTapEvent = "+e);
-                return true;
-            }
-
-            @Override
-            public boolean onDown(MotionEvent e) {
-                return true;
-            }
-        });
-
 //here yourView is the View on which you want to set the double tap action
 /*
         mMap.setOnTouchListener(new View.OnTouchListener() {

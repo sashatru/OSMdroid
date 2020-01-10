@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">OSMdroid</string>
-    <string name="storage_permission_denied">Вы не дали разрешения на доступ к хранилищу данных. И хрен с вами.</string>
-    <!--string name="storage_permission_denied">Вы не дали разрешения на доступ к хранилищу данных и не можете использовать приложение.</string-->
+    <string name="storage_permission_denied">Вы не дали разрешения на доступ к хранилищу данных и не можете использовать приложение.</string>
     <string name="location_permission_denied">Вы не дали разрешения на определение вашего местоположения и не можете использовать приложение.</string>
     <string name="bt_center_map_description">Center on my location</string>
 </resources>
