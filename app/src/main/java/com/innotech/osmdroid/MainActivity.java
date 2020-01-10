@@ -43,6 +43,9 @@ import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.Polyline;
+import org.osmdroid.views.overlay.milestones.MilestoneBitmapDisplayer;
+import org.osmdroid.views.overlay.milestones.MilestoneManager;
+import org.osmdroid.views.overlay.milestones.MilestonePixelDistanceLister;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -308,12 +311,12 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
         pathOverlay.setPoints(lg);
 
         final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.direction_arrow);
-        /*final List<MilestoneManager> managers = new ArrayList<>();
+        final List<MilestoneManager> managers = new ArrayList<>();
         managers.add(new MilestoneManager(
-                new MilestonePixelDistanceLister(20, 100),
-                new MilestoneBitmapDisplayer(90, true, bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2)
+                new MilestonePixelDistanceLister(0, 200),
+                new MilestoneBitmapDisplayer(90, true, bitmap, 0, 0)
         ));
-        pathOverlay.setMilestoneManagers(managers);*/
+        pathOverlay.setMilestoneManagers(managers);
 
         mMap.getOverlays().add(pathOverlay);
         //set route polyline*****
