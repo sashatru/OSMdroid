@@ -3,6 +3,8 @@ package com.innotech.osmdroid;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -48,6 +50,7 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MapEventsReceiver {
     private final static String TAG = "OSMdroid";
@@ -110,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
         LinearLayout contentLayout = (LinearLayout) findViewById(R.id.contentLayout);
         mMap = new MapView(ctx);
         //set custom mMap tile source
-        mMap.setTileSource(MAPNIK);
+        mMap.setTileSource(OSM_MAP);
         //custom
         org.osmdroid.views.MapView.LayoutParams mapParams = new org.osmdroid.views.MapView.LayoutParams(
                 org.osmdroid.views.MapView.LayoutParams.MATCH_PARENT,
@@ -161,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
         tileProvider.setTileSource(MY_ELIT_MAP);
         final TilesOverlay mTilesOverlay = new TilesOverlay(tileProvider, ctx);
         mMap.setOverlayManager(new MyOverlayManager(mTilesOverlay));*/
-        mMap.setOverlayManager(MyOverlayManager.create(mMap, ctx));
+        //mMap.setOverlayManager(MyOverlayManager.create(mMap, ctx));
 
         // add default zoom buttons
         mMap.setBuiltInZoomControls(true);
@@ -296,6 +299,7 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
 
     public void showRoute(View view) {
 
+
         ArrayList<GeoPoint> lg = new ArrayList<>();
         //custom route****
         lg.add(new GeoPoint(50.41685, 30.49487));
@@ -332,6 +336,15 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
         pathOverlay.setWidth(6);
         pathOverlay.setColor(Color.BLUE);
         pathOverlay.setPoints(lg);
+
+        final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.direction_arrow);
+        /*final List<MilestoneManager> managers = new ArrayList<>();
+        managers.add(new MilestoneManager(
+                new MilestonePixelDistanceLister(20, 100),
+                new MilestoneBitmapDisplayer(90, true, bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2)
+        ));
+        pathOverlay.setMilestoneManagers(managers);*/
+
         mMap.getOverlays().add(pathOverlay);
         //set route polyline*****
 

@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/ic_center_map"
-        android:src="@drawable/ic_menu_mylocation"
+        android:src="@drawable/flag_g"
         android:layout_marginRight="14dp"
         android:background="#00ffffff"
         android:contentDescription="@string/bt_center_map_description"

@@ -37,7 +37,7 @@ public class MyOverlayManager extends DefaultOverlayManager {
     @Override
     public boolean onDoubleTapEvent(MotionEvent e, MapView pMapView) {
         //Log.d(TAG, "onDoubleTapEvent "+e);
-        if (e.getAction() == MotionEvent.ACTION_UP) {MainActivity.zoomInMap();}
+        //if (e.getAction() == MotionEvent.ACTION_UP) {MainActivity.zoomInMap();}
         return false;
     }
 
