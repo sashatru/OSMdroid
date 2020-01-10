@@ -1,49 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
     <LinearLayout
         android:id="@+id/contentLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" android:orientation="vertical">
-    </LinearLayout>
+        android:layout_height="match_parent"
+        android:orientation="vertical"></LinearLayout>
+
     <TextView
         android:id="@+id/centerCoords"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" android:layout_marginTop="28dp"
-        android:text="Текст" android:textAlignment="center" android:textColor="@android:color/black"
-        android:textSize="24sp"/>
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="28dp"
+        android:text="Текст"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="24sp" />
+
     <ImageButton
+        android:id="@+id/ic_center_map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/ic_center_map"
-        android:src="@drawable/flag_g"
+        android:layout_below="@+id/centerCoords"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="14dp"
         android:layout_marginRight="14dp"
         android:background="#00ffffff"
         android:contentDescription="@string/bt_center_map_description"
         android:cropToPadding="true"
-        android:layout_marginEnd="14dp" android:layout_below="@+id/centerCoords"
-        android:layout_alignParentRight="true" android:layout_alignParentEnd="true"/>
+        android:src="@drawable/ic_menu_mylocation" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/floatingActionButton2" android:layout_marginLeft="28dp"
+        android:layout_alignTop="@+id/floatingActionButton2"
         android:layout_marginStart="28dp"
+        android:layout_marginLeft="28dp"
         android:layout_toEndOf="@+id/floatingActionButton2"
         android:layout_toRightOf="@+id/floatingActionButton2"
-        android:clickable="true" android:onClick="setMapToPoint"
-        app:fabSize="normal" app:srcCompat="@drawable/person"/>
+        android:clickable="true"
+        android:onClick="setMapToPoint"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/person" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" android:layout_marginBottom="47dp"
-        android:layout_marginLeft="29dp" android:layout_marginStart="29dp"
-        android:clickable="true" android:onClick="showRoute"
-        app:fabSize="normal" app:srcCompat="@android:drawable/ic_menu_crop"/>
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="29dp"
+        android:layout_marginLeft="29dp"
+        android:layout_marginBottom="47dp"
+        android:clickable="true"
+        android:onClick="showRoute"
+        app:fabSize="normal"
+        app:srcCompat="@android:drawable/ic_menu_crop" />
 </RelativeLayout>

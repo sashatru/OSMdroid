@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
                 18, 256, ".png", new String[]{"https://tiles.wmflabs.org/bw-mapnik/"}, "https://tiles.wmflabs.org/bw-mapnik/");
 
         // !!! it's highly important for Android>M make mapView programmatically
-        LinearLayout contentLayout = (LinearLayout) findViewById(R.id.contentLayout);
+        LinearLayout contentLayout = findViewById(R.id.contentLayout);
         mMap = new MapView(ctx);
         //set custom mMap tile source
         mMap.setTileSource(OSM_MAP);
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
                 org.osmdroid.views.MapView.LayoutParams.MATCH_PARENT,
                 null, 0, 0, 0);
         contentLayout.addView(mMap, mapParams);
-        textViewCurrentLocation = (TextView) findViewById(R.id.centerCoords);
+        textViewCurrentLocation = findViewById(R.id.centerCoords);
 
 
 //here yourView is the View on which you want to set the double tap action
@@ -195,12 +196,12 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
 
         mMap.invalidate();
 
-        btCenterMap = (ImageButton) findViewById(R.id.ic_center_map);
+        btCenterMap = findViewById(R.id.ic_center_map);
 
         btCenterMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mapController.setZoom(13);
+                mapController.setZoom(13D);
                 setLastKnownLocation();
             }
         });
@@ -303,17 +304,18 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
         //custom route****
 
         //set route polyline*****
-        pathOverlay = new Polyline();
+        pathOverlay = new Polyline(mMap);
         pathOverlay.setGeodesic(true);
-        pathOverlay.setWidth(6);
-        pathOverlay.setColor(Color.BLUE);
+        pathOverlay.getOutlinePaint().setStrokeWidth(6f);
+        pathOverlay.getOutlinePaint().setColor(Color.BLUE);
         pathOverlay.setPoints(lg);
 
-        final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.direction_arrow);
+        //final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.arrow);
+        final Bitmap bitmap = ResourceUtil.getBitmap(this, R.drawable.arrow);
         final List<MilestoneManager> managers = new ArrayList<>();
         managers.add(new MilestoneManager(
                 new MilestonePixelDistanceLister(0, 200),
-                new MilestoneBitmapDisplayer(90, true, bitmap, 0, 0)
+                new MilestoneBitmapDisplayer(45, true, bitmap, bitmap.getWidth(), 0)
         ));
         pathOverlay.setMilestoneManagers(managers);
 
@@ -332,7 +334,8 @@ public class MainActivity extends AppCompatActivity implements MapEventsReceiver
         finishOvelayItem = new OverlayItem("Точка Б", "Финиш", lg.get(lg.size() - 1));
         finishOvelayItem.setMarker(pointB);
         mItemList.add(finishOvelayItem);
-        ItemizedOverlayWithFocus<OverlayItem> itemizedOverlay = new ItemizedOverlayWithFocus<>(mItemList,
+        ItemizedOverlayWithFocus<OverlayItem> itemizedOverlay =
+                new ItemizedOverlayWithFocus<>(mItemList,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
                     @Override
                     public boolean onItemSingleTapUp(final int index, OverlayItem item) {
